@@ -1,0 +1,39 @@
+{
+  "name": "mock-exam-system",
+  "version": "1.0.0",
+  "description": "A proctored online exam system with security features, text highlighting, and PDF generation",
+  "main": "app.js",
+  "unpkg": "mock-exam-system.min.js",
+  "jsdelivr": "mock-exam-system.min.js",
+  "files": [
+    "app.js",
+    "mock-exam-system.min.js",
+    "README.md"
+  ],
+  "keywords": [
+    "exam",
+    "proctoring",
+    "online-exam",
+    "test",
+    "assessment",
+    "pdf",
+    "security",
+    "fullscreen"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mock-exam-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/mock-exam-system/issues"
+  },
+  "homepage": "https://github.com/yourusername/mock-exam-system#readme",
+  "scripts": {
+    "build": "npx terser app.js -c -m --comments false -o mock-exam-system.min.js"
+  },
+  "devDependencies": {
+    "terser": "^5.36.0"
+  }
+}

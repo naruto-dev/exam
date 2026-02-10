@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Exam - CDN Example</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .highlight { background: yellow; }
+        
+        /* Welcome Screen Styles */
+        #welcomeScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .welcome-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .welcome-container h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .welcome-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        #welcomeError {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .start-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Exam Container Styles */
+        #examContainer {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f5f5f5;
+        }
+        
+        .exam-header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        #studentInfo {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        #passageContent {
+            flex: 1;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            line-height: 1.8;
+            user-select: text;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .question label {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .question label:hover {
+            background: #fff;
+        }
+        
+        .question input[type="radio"],
+        .question input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .submit-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        #submitBtn {
+            padding: 15px 40px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #submitBtn:hover {
+            background: #b91c1c;
+        }
+        
+        /* Results Modal */
+        #resultsModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h2 {
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+        
+        #answerSheet {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen">
+        <div class="welcome-container">
+            <h1>📝 Mathematics Mock Exam</h1>
+            <p>Please enter your details to begin the exam</p>
+            
+            <div id="welcomeError"></div>
+            
+            <div class="form-group">
+                <label for="studentName">Full Name *</label>
+                <input id="studentName" type="text" placeholder="Enter your full name" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="examPassword">Exam Password *</label>
+                <input id="examPassword" type="password" placeholder="Enter the exam password" required />
+            </div>
+            
+            <button class="start-button">Start Exam</button>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                Password: exam123 (for demo purposes)
+            </p>
+        </div>
+    </div>
+
+    <!-- Exam Container -->
+    <div id="examContainer">
+        <div class="exam-header">
+            <div id="studentInfo"></div>
+        </div>
+        
+        <div id="passageContent">
+            <div class="question">
+                <h3>Question 1: Basic Arithmetic</h3>
+                <p>What is the result of 15 + 27?</p>
+                <label><input type="radio" name="q1" value="A"> A) 40</label>
+                <label><input type="radio" name="q1" value="B"> B) 42</label>
+                <label><input type="radio" name="q1" value="C"> C) 44</label>
+                <label><input type="radio" name="q1" value="D"> D) 52</label>
+            </div>
+            
+            <div class="question">
+                <h3>Question 2: Algebra</h3>
+                <p>Solve for x: 2x + 5 = 15</p>
+                <label><input type="radio" name="q2" value="A"> A) x = 4</label>
+                <label><input type="radio" name="q2" value="B"> B) x = 5</label>
+                <label><input type="radio" name="q2" value="C"> C) x = 6</label>
+                <label><input type="radio" name="q2" value="D"> D) x = 10</label>
+            </div>
+            
+            <div class="question">
+                <h3>Question 3: Geometry</h3>
+                <p>What is the area of a circle with radius 5?</p>
+                <label><input type="radio" name="q3" value="A"> A) 25π</label>
+                <label><input type="radio" name="q3" value="B"> B) 10π</label>
+                <label><input type="radio" name="q3" value="C"> C) 5π</label>
+                <label><input type="radio" name="q3" value="D"> D) 50π</label>
+            </div>
+            
+            <div class="question">
+                <h3>Question 4: Word Problem</h3>
+                <p>A store sells apples for $2 each. If you buy 7 apples, how much will you pay?</p>
+                <label><input type="radio" name="q4" value="A"> A) $12</label>
+                <label><input type="radio" name="q4" value="B"> B) $14</label>
+                <label><input type="radio" name="q4" value="C"> C) $16</label>
+                <label><input type="radio" name="q4" value="D"> D) $18</label>
+            </div>
+            
+            <div class="submit-container">
+                <button id="submitBtn">Submit Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal">
+        <div class="modal-content">
+            <h2>✅ Exam Submitted Successfully!</h2>
+            <p>Your answer sheet has been generated and downloaded as a PDF.</p>
+            <pre id="answerSheet"></pre>
+        </div>
+    </div>
+
+    <!-- Load the library from local file (replace with your CDN URL) -->
+    <script src="mock-exam-system.min.js"></script>
+    
+    <!-- Initialize the exam system -->
+    <script>
+        MockExamSystem.init({
+            // Exam Configuration
+            password: 'exam123',              // Required password to start exam
+            reactivationCode: '1234',         // Code to restore after violation
+            testTitle: 'Mathematics Mock Exam',
+            testCode: 'MATH-2024-SAMPLE',
+            codeTimeout: 60000,               // 60 seconds to enter reactivation code
+            pdfFileNamePrefix: 'Math_Exam',
+            
+            // Event Callbacks
+            onExamStart: function(data) {
+                console.log('📚 Exam started!', data);
+                console.log('Student:', data.studentName);
+                console.log('Time:', data.timestamp);
+            },
+            
+            onPDFGenerated: function(data) {
+                console.log('📄 PDF Generated!', data);
+                console.log('Student:', data.studentName);
+                console.log('Violations:', data.violationCount);
+                console.log('Answers:', data.answers);
+            },
+            
+            onViolation: function(violation, allViolations) {
+                console.warn('⚠️ Violation detected!', violation);
+                console.log('Total violations:', allViolations.length);
+            },
+            
+            onReactivated: function() {
+                console.log('✅ Exam reactivated successfully!');
+            },
+            
+            onProctoringTimeout: function() {
+                console.error('⏰ Proctoring timeout - exam terminated!');
+            }
+        });
+    </script>
+</body>
+</html>
