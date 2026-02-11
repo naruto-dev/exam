@@ -338,6 +338,17 @@
 
   function collectAnswers(studentName, proctoringSystem) {
     var answers = {};
+    var allQuestionNums = [];
+    document.querySelectorAll('.question-number').forEach(function (el) {
+      var num = (el.textContent || '').trim().replace(/^\D+/, '');
+      if (num && allQuestionNums.indexOf(num) === -1) allQuestionNums.push(num);
+    });
+    document.querySelectorAll('[data-question]').forEach(function (el) {
+      var q = el.getAttribute('data-question');
+      if (q && allQuestionNums.indexOf(q) === -1) allQuestionNums.push(q);
+    });
+    allQuestionNums.forEach(function (q) { answers[q] = '(not answered)'; });
+
     var questionItems = document.querySelectorAll('.question-item');
     questionItems.forEach(function (item) {
       var numEl = item.querySelector('.question-number');
@@ -347,7 +358,6 @@
         if (num) answers[num] = (selected.textContent || '').trim() || '(not answered)';
       }
     });
-    // Checkboxes (multi-select): group by data-question, join checked values
     var checkboxGroups = {};
     document.querySelectorAll('input[type="checkbox"][data-question]:checked').forEach(function (el) {
       var q = el.getAttribute('data-question');
@@ -356,14 +366,10 @@
     Object.keys(checkboxGroups).forEach(function (q) {
       answers[q] = checkboxGroups[q].sort().join(', ') || '(not answered)';
     });
-    // Text inputs (exclude checkboxes): answer-input, table-answer-input, letter-input, etc.
     document.querySelectorAll('input[data-question]:not([type="checkbox"])').forEach(function (el) {
       var q = el.getAttribute('data-question');
-      if (q && !answers[q]) {
-        answers[q] = (el.value || '').trim() || '(not answered)';
-      }
+      if (q) answers[q] = (el.value || '').trim() || '(not answered)';
     });
-    // Select/dropdown: answer-select, dropdown-select, etc.
     document.querySelectorAll('select[data-question]').forEach(function (el) {
       var q = el.getAttribute('data-question');
       if (q) answers[q] = (el.value || '').trim() || '(not answered)';
