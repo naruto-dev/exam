@@ -336,7 +336,8 @@
   //  4. ANSWER COLLECTION (convention-based)
   // ======================================================================
 
-  function collectAnswers(studentName, proctoringSystem) {
+  function collectAnswers(studentName, proctoringSystem, opts) {
+    var options = opts || {};
     var answers = {};
     var allQuestionNums = [];
     document.querySelectorAll('.question-number').forEach(function (el) {
@@ -374,6 +375,14 @@
       var q = el.getAttribute('data-question');
       if (q) answers[q] = (el.value || '').trim() || '(not answered)';
     });
+
+    if (options.questionCount) {
+      for (var i = 1; i <= options.questionCount; i++) {
+        var key = String(i);
+        if (!(key in answers)) answers[key] = '(not answered)';
+      }
+    }
+
     var violationCount = proctoringSystem ? proctoringSystem.getViolationCount() : 0;
     return { studentName: studentName || 'Student', answers: answers, violationCount: violationCount };
   }
@@ -541,7 +550,7 @@
       if (startBtn) startBtn.addEventListener('click', onStartClick);
 
       function onSubmitClick() {
-        var data = collectAnswers(self._studentName, self._proctoring);
+        var data = collectAnswers(self._studentName, self._proctoring, self._opts);
         var resultsModal = document.getElementById('resultsModal');
         var answerSheetEl = document.getElementById('answerSheet');
         if (resultsModal && answerSheetEl) {
