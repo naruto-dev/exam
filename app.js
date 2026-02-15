@@ -359,6 +359,14 @@
         if (num) answers[num] = (selected.textContent || '').trim() || '(not answered)';
       }
     });
+    questionItems.forEach(function (item) {
+      var numEl = item.querySelector('.question-number');
+      var selected = item.querySelector('.mc-option.selected');
+      if (numEl && selected) {
+        var num = (numEl.textContent || '').trim().replace(/^\D+/, '');
+        if (num) answers[num] = (selected.textContent || '').trim() || '(not answered)';
+      }
+    });
     var checkboxGroups = {};
     document.querySelectorAll('input[type="checkbox"][data-question]:checked').forEach(function (el) {
       var q = el.getAttribute('data-question');
